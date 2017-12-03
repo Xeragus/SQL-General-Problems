@@ -85,7 +85,7 @@ OFFERS(o#(pk), s#(fk), pr#(pk), t#(fk), quantity_order, date_order, quantity_sup
 CREATE TABLE SUPPLIERS
 (
 s NUMBER(3) PRIMARY KEY,
-ime_s VARCHAR(50),
+name_s VARCHAR(50),
 balance NUMBER,
 city VARCHAR(20)
 )
@@ -113,4 +113,53 @@ quantity_supply NUMBER,
 date_supply DATE,
 CONSTRAINT OFFERS_FK FOREIGN KEY (pr, type)
 REFERENCES PRODUCTS(prod, type)
+)
+
+/* Add these conditions:
+- the names of the suppliers can't be null
+- the names of the suppliers are unique
+- the balance has to be a number bigger than 0
+- if the city is not entered, then set the default value to London
+- the name of the city where the products are made has to be one 
+of the following: London, Paris, Rome
+- the quantity of supply has to be bigger than the order quantity
+ */
+
+ CREATE TABLE SUPPLIERS
+(
+s NUMBER(3) PRIMARY KEY,
+name_s VARCHAR(50) NOT NULL,
+balance NUMBER CHECK (balance>0),
+city VARCHAR(20) DEFAULT "London",
+CONSTRAINT name_unique UNIQUE(name_s)
+)
+
+CREATE TABLE PRODUCTS
+(
+prod NUMBER(5),
+type NUMBER(2),
+name_p VARCHAR(50),
+color CHAR(5),
+weight NUMBER(3),
+city_p VARCHAR(20) CHECK (city_p IN ('London', 'Paris', 'Rome')),
+CONSTRAINT PRODUCTS_PK PRIMARY KEY (prod, type)
+)
+
+CREATE TABLE OFFERS
+(
+o NUMBER(5) PRIMARY KEY,
+s NUMBER(3) REFERENCES SUPPLIERS(s)
+ON DELETE CASCADE ON UPDATE CASCADE,
+pr NUMBER(5),
+type NUMBER(2),
+quantity_order NUMBER,
+date_order DATE,
+quantity_supply NUMBER,
+date_supply DATE,
+CHECK(quantity_supply <= quantity_order)
+CONSTRAINT OFFERS_FK FOREIGN KEY (pr, type)
+REFERENCES PRODUCTS(prod, type)
+ON DELETE SET NULL ON UPDATE CASCADE,
+CONSTRAINT type_fk FOREIGN KEY (type) REFERENCES PRODUCTS(type)
+ON DELETE SET NULL ON UPDATE CASCADE
 )
