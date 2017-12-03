@@ -76,3 +76,41 @@ CREATE VIEW WORKS_ON_NEW AS
 SELECT FNAME, LNAME, PNAME, HOURS 
 FROM EMPLOYEE, PROJECT, WORKS_ON
 WHERE SSN=ESSN AND PNO=PNUMBER
+
+/* Create tables for the following relations: 
+SUPPLIERS(s#(pk), name_s, balance, city)
+PRODUCTS(prod#(pk), type#(pk), name_p, color, weight, city_p)
+OFFERS(o#(pk), s#(fk), pr#(pk), t#(fk), quantity_order, date_order, quantity_supply, date_supply) */
+
+CREATE TABLE SUPPLIERS
+(
+s NUMBER(3) PRIMARY KEY,
+ime_s VARCHAR(50),
+balance NUMBER,
+city VARCHAR(20)
+)
+
+CREATE TABLE PRODUCTS
+(
+prod NUMBER(5),
+type NUMBER(2),
+name_p VARCHAR(50),
+color CHAR(5),
+weight NUMBER(3),
+city_p VARCHAR(20),
+CONSTRAINT PRODUCTS_PK PRIMARY KEY (prod, type)
+)
+
+CREATE TABLE OFFERS
+(
+o NUMBER(5) PRIMARY KEY,
+s NUMBER(3) REFERENCES SUPPLIERS(s)
+pr NUMBER(5),
+type NUMBER(2),
+quantity_order NUMBER,
+date_order DATE,
+quantity_supply NUMBER,
+date_supply DATE,
+CONSTRAINT OFFERS_FK FOREIGN KEY (pr, type)
+REFERENCES PRODUCTS(prod, type)
+)
