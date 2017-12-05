@@ -1,0 +1,73 @@
+﻿SEKTORI (SEKTOR# , IME_SEKTOR, GRAD)
+VRABOTENI (VRAB# , IME_VRAB, KVALIFIKACIJA, PLATA, SEKTOR#*)
+PROEKTI (PROEKT#, IME_PR, SREDSTVA)
+UCESTVA (VRAB#*, PROEKT#* , FUNKCIJA)
+
+1. ИМИЊА НА СЕКТОРИ И ВРАБОТЕНИ, ШТО СЕ ВКВ И КОИ ИМААТ ПЛАТА > 10000, СОРТИРАНИ
+ПО ИМЕТО НА ВРАБОТЕНИТЕ.
+
+SELECT IME_SEKTOR, IME_VRAB
+FROM SEKTORI, VRABOTENI
+WHERE KVALIFIKACIJA="VKV" AND 
+	PLATA>10000 AND 
+	SEKTORI.SEKTOR#=VRABOTENI.SEKTOR#
+ORDER BY IME_VRAB
+
+2.1 ИМИЊА НА ВРАБОТЕНИ КОИ СЕ ВРАБОТЕНИ ВО СКОПЈЕ.
+SELECT IME_VRAB
+FROM VRABOTENI, SEKTORI
+WHERE VRABOTENI.SEKTOR# = SEKTORI.SEKTOR# AND
+	SEKTORI.GRAD='SKOPJE'
+
+2.2 ИМИЊА НА ВРАБОТЕНИ КОИ СЕ ВРАБОТЕНИ ВО СКОПЈЕ.
+SELECT IME_VRAB
+FROM VRABOTENI
+WHERE SEKTOR# IN 
+	(SELECT SEKTOR#
+	FROM SEKTORI
+	WHERE GRAD='SKOPJE')
+
+3. ПРЕГЛЕД НА КВАЛИФИКАЦИИ ПО СЕКТОР.
+SELECT DISTINCT IME_SEKTOR, KVALIFIKACIJA
+FROM SEKTORI, VRABOTENI
+WHERE SEKTORI.SEKTOR#=VRABOTENI.SEKTOR#
+ORDER BY IME_SEKTOR
+
+4. ИМИЊА НА ВРАБОТЕНИ ШТО РАБОТАТ ВО СЕКТОР 4 ИЛИ 7.
+SELECT IME_VRAB
+FROM VRABOTENI 
+WHERE SEKTOR# IN (4,7)
+
+5. БРОЕВИ НА СЕКТОРИ ШТО НЕМААТ РАБОТНИЦИ. 
+SELECT SEKTOR#
+FROM SEKTORI
+MINUS
+SELECT SEKTOR#
+FROM VRABOTENI
+
+6.1 БРОЕВИ НА ВКВ ВРАБОТЕНИ ШТО ЗЕМААТ УЧЕСТВО ВО НЕКОИ ПРОЕКТИ. 
+
+SELECT VRAB#
+FROM VRABOTENI, UCESTVA
+WHERE UCESTVA.VRAB#=VRABOTENI.VRAB#
+	AND VRABOTENI.KVALIFIKACIJA='VKV'
+
+6.2 БРОЕВИ НА ВКВ ВРАБОТЕНИ ШТО ЗЕМААТ УЧЕСТВО ВО НЕКОИ ПРОЕКТИ. 
+
+SELECT VRAB#
+FROM VRABOTENI
+WHERE KVALIFIKACIJA='VKV'
+INTERSECT
+SELECT VRAB#
+FROM UCESTVA
+
+7. ПРОСЕЧЕН ЛИЧЕН ДОХОД НА ВКВ РАБОТНИЦИ. 
+
+SELECT AVG(PLATA)
+FROM VRABOTENI
+WHERE KVALIFIKACIJA='VKV'
+
+8. БРОЈОТ НА РАЗЛИЧНИ ФУНКЦИИ ШТО ГИ ОБАВУВА ВО ПРОЕКТИТЕ ВРАБОТЕН БР. 946. 
+SELECT COUNT(DISTINCT FUNKCIJA)
+FROM UCESTVA
+WHERE VRAB#=946

@@ -1,0 +1,39 @@
+﻿1. ИЗЛИСТАЈ ГИ ИМИЊАТА НА ПРОИЗВОДИТЕ ЗАЕДНО СО НАБАВНАТА ЦЕНА И ПРОДАЖНАТА ЦЕНА
+БЕЗ ДДВ.
+
+SELECT IME_PROIZVOD, NABAVNA_CENA, PRODAZNA_CENA*100/118
+FROM PROIZVODI
+
+2. ИЗЛИСТАЈ ГИ ИМИЊАТА НА ПРОИЗВОДИТЕ ЗАЕДНО СО НАБАВНАТА И ПРОДАЖНАТА ЦЕНА КАКО
+И РАЗЛИКАТА ПОМЕЃУ ПРОДАЖНАТА И НАБАВНАТА ЦЕНА.
+
+
+SELECT IME_PROIZVOD, NABAVNA_CENA, PRODAZNA_CENA, (PRODAZNA_CENA-NABAVNA_CENA) RAZLIKA
+FROM PROIZVODI
+
+3. ДАЈ ГИ ПОДАТОЦИТЕ ЗА ПРОИЗВОДИТЕ ЗА КОИ ИМЕТО ИМ ПОЧНУВА НА ‘МASLO’.
+
+SELECT *
+FROM PROIZVODI
+WHERE IME_PROIZVOD LIKE 'MASLO%'
+
+4. ДАЈ ГИ ПРОИЗВОДИТЕ КОИ СЕ МЕРАТ ВО ЛИТРИ И КИЛОГРАМИ.
+
+SELECT *
+FROM PROIZVODI
+WHERE EDINICA_MERKA='L' OR 
+	EDINICA_MERKA='KG'
+
+SELECT * 
+FROM PROIZVODI
+WHERE EDINICA_MERKA IN ('L', 'KG')
+
+5. ДАЈ ГИ ПРОЗВОДИТЕ КОИ ИМААТ ЦЕНА МЕЃУ 50,00 И 250,00 ДЕНАРИ.
+
+SELECT *
+FROM PROIZVODI
+WHERE PRODAZNA_CENA>=50 AND PRODAZNA_CENA<=250
+
+SELECT *
+FROM PROIZVODI
+WHERE PRODAZNA_CENA BETWEEN 50 AND 250

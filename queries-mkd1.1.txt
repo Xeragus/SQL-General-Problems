@@ -1,0 +1,184 @@
+﻿SEKTORI (SEKTOR# , IME_SEKTOR, GRAD)
+VRABOTENI (VRAB# , IME_VRAB, KVALIFIKACIJA, PLATA, SEKTOR#*)
+PROEKTI (PROEKT#, IME_PR, SREDSTVA)
+UCESTVA (VRAB#*, PROEKT#* , FUNKCIJA)
+
+1. ИМИЊА НА СЕКТОРИ И ВРАБОТЕНИ, ШТО СЕ ВКВ И КОИ ИМААТ ПЛАТА > 10000, СОРТИРАНИ
+ПО ИМЕТО НА ВРАБОТЕНИТЕ.
+
+SELECT IME_SEKTOR, IME_VRAB
+FROM SEKTORI, VRABOTENI
+WHERE KVALIFIKACIJA="VKV" AND 
+	PLATA>10000 AND 
+	SEKTORI.SEKTOR#=VRABOTENI.SEKTOR#
+ORDER BY IME_VRAB
+
+2.1 ИМИЊА НА ВРАБОТЕНИ КОИ СЕ ВРАБОТЕНИ ВО СКОПЈЕ.
+SELECT IME_VRAB
+FROM VRABOTENI, SEKTORI
+WHERE VRABOTENI.SEKTOR# = SEKTORI.SEKTOR# AND
+	SEKTORI.GRAD='SKOPJE'
+
+2.2 ИМИЊА НА ВРАБОТЕНИ КОИ СЕ ВРАБОТЕНИ ВО СКОПЈЕ.
+SELECT IME_VRAB
+FROM VRABOTENI
+WHERE SEKTOR# IN 
+	(SELECT SEKTOR#
+	FROM SEKTORI
+	WHERE GRAD='SKOPJE')
+
+3. ПРЕГЛЕД НА КВАЛИФИКАЦИИ ПО СЕКТОР.
+SELECT DISTINCT IME_SEKTOR, KVALIFIKACIJA
+FROM SEKTORI, VRABOTENI
+WHERE SEKTORI.SEKTOR#=VRABOTENI.SEKTOR#
+ORDER BY IME_SEKTOR
+
+4. ИМИЊА НА ВРАБОТЕНИ ШТО РАБОТАТ ВО СЕКТОР 4 ИЛИ 7.
+SELECT IME_VRAB
+FROM VRABOTENI 
+WHERE SEKTOR# IN (4,7)
+
+5. БРОЕВИ НА СЕКТОРИ ШТО НЕМААТ РАБОТНИЦИ. 
+SELECT SEKTOR#
+FROM SEKTORI
+MINUS
+SELECT SEKTOR#
+FROM VRABOTENI
+
+6.1 БРОЕВИ НА ВКВ ВРАБОТЕНИ ШТО ЗЕМААТ УЧЕСТВО ВО НЕКОИ ПРОЕКТИ. 
+
+SELECT VRAB#
+FROM VRABOTENI, UCESTVA
+WHERE UCESTVA.VRAB#=VRABOTENI.VRAB#
+	AND VRABOTENI.KVALIFIKACIJA='VKV'
+
+6.2 БРОЕВИ НА ВКВ ВРАБОТЕНИ ШТО ЗЕМААТ УЧЕСТВО ВО НЕКОИ ПРОЕКТИ. 
+
+SELECT VRAB#
+FROM VRABOTENI
+WHERE KVALIFIKACIJA='VKV'
+INTERSECT
+SELECT VRAB#
+FROM UCESTVA
+
+7. ПРОСЕЧЕН ЛИЧЕН ДОХОД НА ВКВ РАБОТНИЦИ. 
+
+SELECT AVG(PLATA)
+FROM VRABOTENI
+WHERE KVALIFIKACIJA='VKV'
+
+8. БРОЈОТ НА РАЗЛИЧНИ ФУНКЦИИ ШТО ГИ ОБАВУВА ВО ПРОЕКТИТЕ ВРАБОТЕН БР. 946. 
+SELECT COUNT(DISTINCT FUNKCIJA)
+FROM UCESTVA
+WHERE VRAB#=946
+﻿ISP (ISP#, IME_I, STATUS, GRAD_I) / ИСПОРАЧАТЕЛИ
+DELOVI (DEL#, IME_D, BOJA, TEZINA) / НА ДЕЛОВИ ШТО СЕ ИЗРАБОТУВААТ
+PROIZVODITELI (PR#, IME_P, GRAD_P) / ОД РАЗНИ ПРОИЗВОДИТЕЛИ
+PONUDI (ISP#*, DEL#*, PR#*, KOLICINA, CENA)
+
+
+1. СИТЕ ПОДАТОЦИ ЗА ПРОИЗВОДИТЕЛИТЕ ОД СКОПЈЕ И БИТОЛА.
+SELECT *
+FROM PROIZVODITELI
+WHERE GRAD_P='BITOLA' OR GRAD_P='SKOPJE'
+
+2. ШИФРИТЕ НА ИСПОРАЧАТЕЛИ ШТО ИМААТ ДОСТАВЕНО ПОНУДА ЗА ДЕЛ БР.5 ОД
+ПРОИЗВОДИТЕЛ БР.1.
+SELECT ISP#
+FROM PONUDI
+WHERE DEL#=5 AND PR#=1
+	
+3. БОИ НА ДЕЛОВИ ЗА КОИ ШТО ИМА ПОНУДА ОД ИСПОРАЧАТЕЛОТ БР. 8.
+
+SELECT BOJA
+FROM DELOVI, PONUDI
+WHERE DELOVI.DEL# = PONUDI.DEL# AND PONUDI.ISP#=8
+
+4. БРОЕВИ НА ДЕЛОВИ ШТО СЕ ИСПОРАЧУВААТ ЗА ПРОИЗВОДИ ШТО СЕ ИЗРАБОТУВААТ ВО
+БИТОЛА.
+SELECT PONUDI.DEL#
+FROM PROIZVODITELI, PONUDI
+WHERE PONUDI.PR#=PROIZVODITELI.PR# AND PROIZVODITELI.PR#='BITOLA'
+
+5. БРОЕВИ НА ДЕЛОВИ ЗА КОИ ИМА ПОНУДА, ПРОИЗВЕДЕНИ ОД БИЛО КОЈ ПРОИЗВОДИТЕЛ, НО И
+ИСПОРАЧАТЕЛОТ ДА Е ОД ИСТИОТ ГРАД КАКО И ПРОИЗВОДИТЕЛОТ.
+
+SELECT DEL#
+FROM ISP, PROIZVODITELI, PONUDI
+WHERE ISP.ISP#=PONUDI.ISP# AND 
+	PROIZVODITELI.PR# = PONUDI.PR# AND
+	ISP.GRAD_I = PROIZVODITELI.GRAD_P﻿1. ИЗЛИСТАЈ ГИ ИМИЊАТА НА ПРОИЗВОДИТЕ ЗАЕДНО СО НАБАВНАТА ЦЕНА И ПРОДАЖНАТА ЦЕНА
+БЕЗ ДДВ.
+
+SELECT IME_PROIZVOD, NABAVNA_CENA, PRODAZNA_CENA*100/118
+FROM PROIZVODI
+
+2. ИЗЛИСТАЈ ГИ ИМИЊАТА НА ПРОИЗВОДИТЕ ЗАЕДНО СО НАБАВНАТА И ПРОДАЖНАТА ЦЕНА КАКО
+И РАЗЛИКАТА ПОМЕЃУ ПРОДАЖНАТА И НАБАВНАТА ЦЕНА.
+
+
+SELECT IME_PROIZVOD, NABAVNA_CENA, PRODAZNA_CENA, (PRODAZNA_CENA-NABAVNA_CENA) RAZLIKA
+FROM PROIZVODI
+
+3. ДАЈ ГИ ПОДАТОЦИТЕ ЗА ПРОИЗВОДИТЕ ЗА КОИ ИМЕТО ИМ ПОЧНУВА НА ‘МASLO’.
+
+SELECT *
+FROM PROIZVODI
+WHERE IME_PROIZVOD LIKE 'MASLO%'
+
+4. ДАЈ ГИ ПРОИЗВОДИТЕ КОИ СЕ МЕРАТ ВО ЛИТРИ И КИЛОГРАМИ.
+
+SELECT *
+FROM PROIZVODI
+WHERE EDINICA_MERKA='L' OR 
+	EDINICA_MERKA='KG'
+
+SELECT * 
+FROM PROIZVODI
+WHERE EDINICA_MERKA IN ('L', 'KG')
+
+5. ДАЈ ГИ ПРОЗВОДИТЕ КОИ ИМААТ ЦЕНА МЕЃУ 50,00 И 250,00 ДЕНАРИ.
+
+SELECT *
+FROM PROIZVODI
+WHERE PRODAZNA_CENA>=50 AND PRODAZNA_CENA<=250
+
+SELECT *
+FROM PROIZVODI
+WHERE PRODAZNA_CENA BETWEEN 50 AND 250﻿ISP (ISP#, IME_I, STATUS, GRAD_I) / ИСПОРАЧАТЕЛИ
+DELOVI (DEL#, IME_D, BOJA, TEZINA) / НА ДЕЛОВИ ШТО СЕ ИЗРАБОТУВААТ
+PROIZVODITELI (PR#, IME_P, GRAD_P) / ОД РАЗНИ ПРОИЗВОДИТЕЛИ
+PONUDI (ISP#*, DEL#*, PR#*, KOLICINA, CENA)
+
+
+1. СИТЕ ПОДАТОЦИ ЗА ПРОИЗВОДИТЕЛИТЕ ОД СКОПЈЕ И БИТОЛА.
+SELECT *
+FROM PROIZVODITELI
+WHERE GRAD_P='BITOLA' OR GRAD_P='SKOPJE'
+
+2. ШИФРИТЕ НА ИСПОРАЧАТЕЛИ ШТО ИМААТ ДОСТАВЕНО ПОНУДА ЗА ДЕЛ БР.5 ОД
+ПРОИЗВОДИТЕЛ БР.1.
+SELECT ISP#
+FROM PONUDI
+WHERE DEL#=5 AND PR#=1
+	
+3. БОИ НА ДЕЛОВИ ЗА КОИ ШТО ИМА ПОНУДА ОД ИСПОРАЧАТЕЛОТ БР. 8.
+
+SELECT BOJA
+FROM DELOVI, PONUDI
+WHERE DELOVI.DEL# = PONUDI.DEL# AND PONUDI.ISP#=8
+
+4. БРОЕВИ НА ДЕЛОВИ ШТО СЕ ИСПОРАЧУВААТ ЗА ПРОИЗВОДИ ШТО СЕ ИЗРАБОТУВААТ ВО
+БИТОЛА.
+SELECT PONUDI.DEL#
+FROM PROIZVODITELI, PONUDI
+WHERE PONUDI.PR#=PROIZVODITELI.PR# AND PROIZVODITELI.PR#='BITOLA'
+
+5. БРОЕВИ НА ДЕЛОВИ ЗА КОИ ИМА ПОНУДА, ПРОИЗВЕДЕНИ ОД БИЛО КОЈ ПРОИЗВОДИТЕЛ, НО И
+ИСПОРАЧАТЕЛОТ ДА Е ОД ИСТИОТ ГРАД КАКО И ПРОИЗВОДИТЕЛОТ.
+
+SELECT DEL#
+FROM ISP, PROIZVODITELI, PONUDI
+WHERE ISP.ISP#=PONUDI.ISP# AND 
+	PROIZVODITELI.PR# = PONUDI.PR# AND
+	ISP.GRAD_I = PROIZVODITELI.GRAD_P
