@@ -1,0 +1,100 @@
+Table: PART
+PARTNUM DESCRIPTION PRICE
+=========== ==================== ===========
+54 PEDALS 54.25
+42 SEATS 24.50
+46 TIRES 15.25
+23 MOUNTAIN BIKE 350.45
+76 ROAD BIKE 530.00
+10 TANDEM 1200.00
+
+Table: ORDERS
+ORDEREDON NAME PARTNUM QUANTITY REMARKS
+=========== ========== ========= ========== =======
+15-MAY-1996   TRUE WHEEL   23 6 PAID
+19-MAY-1996   TRUE WHEEL   76 3 PAID
+2-SEP-1996   TRUE WHEEL   10 1 PAID
+30-JUN-1996   TRUE WHEEL   42 8 PAID
+30-JUN-1996   BIKE SPEC   54 10 PAID
+30-MAY-1996   BIKE SPEC   10 2 PAID
+30-MAY-1996   BIKE SPEC   23 8 PAID
+17-JAN-1996   BIKE SPEC   76 11 PAID
+17-JAN-1996   LE SHOPPE   76 5 PAID
+1-JUN-1996   LE SHOPPE   10 3 PAID
+1-JUN-1996   AAA BIKE   10 1 PAID
+1-JUL-1996   AAA BIKE   76 4 PAID
+1-JUL-1996   AAA BIKE   46 14 PAID
+11-JUL-1996   JACKS BIKE   76 14 PAID
+
+1. Return all the orders with products that begins with "ROAD".
+1.1
+select *
+from part, orders
+where part.partnum=order.partnum and
+	part.description like 'ROAD%'
+1.2
+select *
+from orders
+where partnum in (
+	select partnum
+	from part
+	where description like 'road%'
+)
+
+2. Find the average price of the orders.
+
+select avg(order.quantity * part.price)
+from orders, part
+where orders.partnum=part.partnum
+
+3. Find the names of the customers and the date of the orders that ordered
+products that had bigger price than the average price of all orders.
+find.
+
+select name, orderedon, quantity*price total
+from orders, part
+where orders.partnum = part.partnum and 
+	part.price > (select avg(order.quantity * part.price)
+	from orders, part
+	where orders.partnum=part.partnum))
+	 
+4. Find the average ordered quantity by customer.
+
+select name, avg(quantity)
+from orders
+group by name
+
+5. Find the average ordered quantity by customer, the average ordered quantity by customer should be bigger than the
+average ordered quantity for all orders.
+select name, avg(quantity)
+from orders
+group by name
+having avg(quantity) > (select avg(quantity)
+			from orders)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
